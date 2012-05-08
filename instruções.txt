@@ -1,0 +1,37 @@
+// Instruções
+
+-- 1RXY
+	R <- CONTEÚDO de XY
+	
+-- 2RXY
+	R <- ENDEREÇO de XY
+	
+-- 3RXY
+	XY <- R (Conteúdo)
+
+-- 40RS
+	S <- R
+
+-- 5RST
+	R <- S + T (C/ complemento de 2)
+	
+-- 6RST
+	R <- S + T (Ponto flutuante)
+	
+-- 7RST
+	R <- S OR T
+	
+-- 8RST
+	R <- S AND T
+	
+-- 9RST
+	R <- S XOR T
+
+-- AR0X
+	Rotaciona R para direita, X vezes.
+	
+-- BRXY
+	Se R == R(0) go to XY
+	
+-- C000
+	Halt
