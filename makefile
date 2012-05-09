@@ -6,3 +6,6 @@ main.o: main.c machine.h
 
 machine.o: machine.c machine.h
 	gcc -c machine.c
+
+clean:
+	rm *.o maquina

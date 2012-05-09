@@ -9,25 +9,25 @@
 #include <stdlib.h>
 #include "machine.h"
 
-void initMem(memoria *op){
+void initMem(){
 	int i;
 
 	i = 0;
 	
 	while (i < SIZE_MEM){
-		op[i]->valor[0] = '\0';
-		op[i]->valor[1] = '\0';
+		ram[i].valor[0] = '\0';
+		ram[i].valor[1] = '\0';
 		i++;
 	}
 }
 
-void initReg(registrador *op){
+void initReg(){
 	int i;
 	
 	i = 0;
 	
 	while (i < NUMERO_REGISTRADORES){
-		op->valor[i] = '\0';
+		variavel.valor[i] = '\0';
 		i++;
 	}
 }
@@ -46,7 +46,9 @@ int conversao(char word){
 
 int conversaoHexa(char c){
 	
-	switch(word){
+	//printf("conversão: %c\n", c);
+	
+	switch(c){
 		case '0': return 0;
 			break;
 		case '1': return 1;
@@ -79,30 +81,31 @@ int conversaoHexa(char c){
 			break;
 		case 'F': return 15;
 			break;
-		
+		case '\0': return 0;
+			break;
 		default: return 16;
 	}
 }
 
-int execucao(memoria *op){
+int execucao(){
 	int i, operacao;
 	char aux;
 	
 	i = 0;
-	aux = op[i]->valor[0];
+	aux = ram[i].valor[0];
 	
 	while ((i < SIZE_MEM) && (aux != '\0')){
 		i++;
 		
 		operacao = conversaoHexa(aux);
-		
-		if (!acao(operacao, op[i])){
+		printf("-- %d%c%c%c %d\n", operacao, ram[i-1].valor[1], ram[i].valor[0], ram[i].valor[1], i);
+		if (!acao(operacao, i)){
 			printf("Instrução não existe.");
 			return 0;
 		}
 		
 		i++;
-		aux = op[i]->valor[0];
+		aux = ram[i].valor[0];
 	}
 	
 	/*while((scanf("%c", &c)) == 1){
@@ -154,14 +157,21 @@ int execucao(memoria *op){
 		
 		mem = mem | aux;
 	}*/
+	printf("\n%d\n", i);
+	return 1;
 }
 
-int acao(char opcode, memoria dado){
+int acao(char opcode, int pos){
+	int indice, x, y;
 	
 	switch(opcode){
-		case 0: return 0;
-			break;
-		case 1: return 1;
+		case 1: indice = conversaoHexa(ram[pos-1].valor[1]);
+			x = leituraMem(ram[pos].valor[0]);
+			y = leituraMem(ram[pos].valor[1]);
+			printf("Registrador [%d] = %d\n", indice, variavel.valor[indice]);
+			printf("Registrador [%d] = %d + %d\n", indice, x, y); //0x%c 0x%c\n", indice, ram[pos].valor[0], ram[pos].valor[1]);
+			variavel.valor[indice] = x + y;
+			printf("Registrador [%d] = %d\n", indice, variavel.valor[indice]);//variavel.valor[indice]);
 			break;
 		case 2: return 2;
 			break;
@@ -186,12 +196,24 @@ int acao(char opcode, memoria dado){
 		case 12: return 12;
 			break;
 		case 13: return 13;
-			break;
-		case 14: return 14;
-			break;
-		case 15: return 15;
-			break;
-		
-		default: return 16;
+			break;		
+		default: return 0;
 	}
+	
+	return 1;
+}
+
+int leituraMem(char word){
+	int i, valor, aux;
+	
+	i = conversaoHexa(word);
+
+	aux = conversaoHexa(ram[i].valor[0]);
+	valor = aux << 4;
+	//printf("%c %d -- %d %d\n", ram[i].valor[1], i, aux, valor);
+	//printf("\t-- %c -> %d\n", word, aux);
+	aux = conversaoHexa(ram[i].valor[1]);
+	valor = valor | aux;
+	
+	return valor;
 }

@@ -12,22 +12,27 @@
 #define NUMERO_REGISTRADORES 16
 
 struct registro {
-	char valor[NUMERO_REGISTRADORES];
-}
+	int valor[NUMERO_REGISTRADORES];
+};
 
 typedef struct registro registrador;
 
 struct memory {
 	char valor[2];
-}
+};
 
 typedef struct memory memoria;
 
-void initMem(memoria *op);
-void initReg(registrador *op);
+void initMem();//(memoria *op);
+void initReg();//(registrador *op);
 
-int conversao(char *word);
+int conversao(char word);
 int conversaoHexa(char c);
-int execucao(memoria *op);
+int execucao();//(memoria *op);
+int acao(char opcode, int pos);//(char opcode, memoria dado, int pos);
+int leituraMem(char word);
+
+memoria ram[SIZE_MEM];
+registrador variavel;
 
 #endif
