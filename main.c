@@ -1,9 +1,11 @@
-/* Trabalho de PC 1
- * Implementação de uma máquina virtual.
- * 
- * Grupo: Guilherme Cousin, Marlon Dias
- * main.c
- */
+// ------------------------------------------------------------
+//  Trabalho Projetos em Computação I - Máquina Virtual
+//	Implementação de uma máquina virtual.
+//
+// Alunos: Guilherme Cousin, Marlon Dias
+// GitHub: https://github.com/marlonsd/PCI-VirtualMachine
+// main.c
+// ------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,9 +35,6 @@ int main(){
 		}
 		scanf("%c", &c);
 	}
-	
-	//printf("-- %c%c%c%c\n", ram[0].valor[0], ram[0].valor[1], ram[1].valor[0], ram[1].valor[1]);
-	//printf("-- %c%c%c%c\n\n", ram[2].valor[0], ram[2].valor[1], ram[3].valor[0], ram[3].valor[1]);
 	
 	i = execucao();
 	

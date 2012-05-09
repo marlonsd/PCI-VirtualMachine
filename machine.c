@@ -1,9 +1,11 @@
-/* Trabalho de PC 1
- * Implementação de uma máquina virtual.
- * 
- * Grupo: Guilherme Cousin, Marlon Dias
- * machine.c
- */
+// ------------------------------------------------------------
+//  Trabalho Projetos em Computação I - Máquina Virtual
+//	Implementação de uma máquina virtual.
+//
+// Alunos: Guilherme Cousin, Marlon Dias
+// GitHub: https://github.com/marlonsd/PCI-VirtualMachine
+// machine.c
+// ------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,8 +47,6 @@ int conversao(char word){
 }
 
 int conversaoHexa(char c){
-	
-	//printf("conversão: %c\n", c);
 	
 	switch(c){
 		case '0': return 0;
@@ -98,122 +98,229 @@ int execucao(){
 		i++;
 		
 		operacao = conversaoHexa(aux);
-		printf("-- %d%c%c%c %d\n", operacao, ram[i-1].valor[1], ram[i].valor[0], ram[i].valor[1], i);
-		if (!acao(operacao, i)){
+		printf("-- %X%c%c%c\n", operacao, ram[i-1].valor[1], ram[i].valor[0], ram[i].valor[1]);
+		if (!acao(operacao, &i)){
 			printf("Instrução não existe.");
 			return 0;
 		}
 		
 		i++;
-		aux = ram[i].valor[0];
+		if (i < SIZE_MEM){
+			aux = ram[i].valor[0];
+		}
+		printf("\n");
 	}
 	
-	/*while((scanf("%c", &c)) == 1){
-		if (!conversao(c)){
-			printf("Instrução não existe.");
-			exit(1);
-		}
-		
-		word[i] = c;
-		i++; 
-		
-		scanf("%c", &c);
-		
-		aux = conversaoHexa(c)
-		
-		if (aux >= 16) {
-			printf("Registrador não existe.");
-			exit(1);
-		}
-		
-		word[i] = c;
-		i++; 
-		
-		scanf("%c", &c);
-		
-		aux = conversaoHexa(c);
-		
-		if (aux >= 16) {
-			printf("Memória não existe.");
-			exit(1);
-		}
-		
-		word[i] = c;
-		i++; 
-		
-		mem = aux << 4;
-		
-		scanf("%c", &c);
-		
-		aux = conversaoHexa(c);
-		
-		if (aux >= 16) {
-			printf("Memória não existe.");
-			exit(1);
-		}
-		
-		word[i] = c;
-		i++; 
-		
-		mem = mem | aux;
-	}*/
-	printf("\n%d\n", i);
 	return 1;
 }
 
-int acao(char opcode, int pos){
-	int indice, x, y;
+int acao(char opcode, int *position){
+	int aux, c, i, indice, x, y, pos;
+
+	pos = *position;
 	
 	switch(opcode){
 		case 1: indice = conversaoHexa(ram[pos-1].valor[1]);
-			x = leituraMem(ram[pos].valor[0]);
-			y = leituraMem(ram[pos].valor[1]);
-			printf("Registrador [%d] = %d\n", indice, variavel.valor[indice]);
-			printf("Registrador [%d] = %d + %d\n", indice, x, y); //0x%c 0x%c\n", indice, ram[pos].valor[0], ram[pos].valor[1]);
-			variavel.valor[indice] = x + y;
-			printf("Registrador [%d] = %d\n", indice, variavel.valor[indice]);//variavel.valor[indice]);
+			x = leituraMem(getEndreco(ram[pos].valor[0], ram[pos].valor[1]));
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			printf("Registrador [%X] <= 0x[%c%c]\n", indice, ram[pos].valor[0], ram[pos].valor[1]);
+			variavel.valor[indice] = x;
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
-		case 2: return 2;
+			
+		case 2: indice = conversaoHexa(ram[pos-1].valor[1]);
+			x = getEndreco(ram[pos].valor[0], ram[pos].valor[1]);
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			printf("Registrador [%X] <= 0x%c%c\n", indice, ram[pos].valor[0], ram[pos].valor[1]);
+			variavel.valor[indice] = x;
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
-		case 3: return 3;
+			
+		case 3: indice = conversaoHexa(ram[pos-1].valor[1]);
+			x = variavel.valor[indice];
+			indice = getEndreco(ram[pos].valor[0], ram[pos].valor[1]);
+			printf("Memória [%X] = 0x%c%c\n", indice, ram[indice].valor[0], ram[indice].valor[1]);
+			printf("Memória [%X] <= R[%X]\n", indice, conversaoHexa(ram[pos-1].valor[1]));
+			conversaoHToChar(x, indice);
+			printf("Memória [%X] = 0x%c%c\n", indice, ram[indice].valor[0], ram[indice].valor[1]);
 			break;
-		case 4: return 4;
+			
+		case 4: if (!conversaoHexa(ram[pos-1].valor[1])){
+				indice = conversaoHexa(ram[pos].valor[0]);
+				x = variavel.valor[indice];
+				indice = conversaoHexa(ram[pos].valor[1]);
+				printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+				printf("Registrador [%X] <= R[%X]\n", indice, conversaoHexa(ram[pos].valor[0]));
+				variavel.valor[indice] = x;
+				printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			} else {
+				printf("Instrução não encontrada.\n\n");
+				exit(1);
+			}
 			break;
-		case 5: return 5;
+			
+		case 5: indice = conversaoHexa(ram[pos].valor[0]);
+			x = variavel.valor[indice];
+			indice = conversaoHexa(ram[pos].valor[1]);
+			x = x + variavel.valor[indice];
+			indice = conversaoHexa(ram[pos-1].valor[1]);
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			printf("Registrador [%X] <= R[%X] + R[%X]\n", indice, conversaoHexa(ram[pos].valor[0]), conversaoHexa(ram[pos].valor[1]));
+			variavel.valor[indice] = x;
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
-		case 6: return 6;
+			
+		case 6: printf("Instrução com ponto flutuante. Não abordada.\n");
 			break;
-		case 7: return 7;
+			
+		case 7: indice = conversaoHexa(ram[pos].valor[0]);
+			x = variavel.valor[indice];
+			indice = conversaoHexa(ram[pos].valor[1]);
+			x = x | variavel.valor[indice];
+			indice = conversaoHexa(ram[pos-1].valor[1]);
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			printf("Registrador [%X] <= R[%X] v R[%X]\n", indice, conversaoHexa(ram[pos].valor[0]), conversaoHexa(ram[pos].valor[1]));
+			variavel.valor[indice] = x;
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
-		case 8: return 8;
+			
+		case 8: indice = conversaoHexa(ram[pos].valor[0]);
+			x = variavel.valor[indice];
+			indice = conversaoHexa(ram[pos].valor[1]);
+			x = x & variavel.valor[indice];
+			indice = conversaoHexa(ram[pos-1].valor[1]);
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			printf("Registrador [%X] <= R[%X] ^ R[%X]\n", indice, conversaoHexa(ram[pos].valor[0]), conversaoHexa(ram[pos].valor[1]));
+			variavel.valor[indice] = x;
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
-		case 9: return 9;
+			
+		case 9: indice = conversaoHexa(ram[pos].valor[0]);
+			x = variavel.valor[indice];
+			indice = conversaoHexa(ram[pos].valor[1]);
+			x = x ^ variavel.valor[indice];
+			indice = conversaoHexa(ram[pos-1].valor[1]);
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			printf("Registrador [%X] <= R[%X] xor R[%X]\n", indice, conversaoHexa(ram[pos].valor[0]), conversaoHexa(ram[pos].valor[1]));
+			variavel.valor[indice] = x;
+			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
-		case 10: return 10;
+			
+		case 10: if (!conversaoHexa(ram[pos].valor[0])){
+				y = conversaoHexa(ram[pos].valor[1]);
+				i = 0;
+				indice = conversaoHexa(ram[pos-1].valor[1]);
+				c = variavel.valor[indice];
+				
+				printf("Registrador [%X] = 0x%X\n", indice, c);
+				printf("Registrador [%X] <= R[%X] >> %d\n", indice, indice, conversaoHexa(ram[pos].valor[1]));
+				
+				while (i < y){
+					aux = c & 1; // 1 = 00000001
+					c = c >> 1;
+					if (aux == 1){
+						c = c | 128; // 128 = 10000000
+					}
+					i++;
+				}
+				
+				variavel.valor[indice] = c;
+				printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
+			} else {
+				printf("Instrução não encontrada.\n\n");
+				exit(1);
+			}
+			
 			break;
-		case 11: return 11;
+			
+		case 11: indice = conversaoHexa(ram[pos-1].valor[1]);
+			if (variavel.valor[indice] == variavel.valor[0]){
+				printf("Registrador [%d] == Registrador [0], go to 0x%c%c", indice, ram[pos].valor[0], ram[pos].valor[1]);
+				x = getEndreco(ram[pos].valor[0], ram[pos].valor[1]);
+				*position = x - 1;
+			} else {
+				printf("Registrador [%d] =/= Registrador [0], go to 0x%X", indice, pos + 1);
+			}
 			break;
-		case 12: return 12;
+			
+		case 12: if (!conversaoHexa(ram[pos-1].valor[1]) && !conversaoHexa(ram[pos].valor[0]) && !conversaoHexa(ram[pos].valor[1])){
+				printf("Halt.\n");
+				*position = 256;
+			} else {
+				printf("Instrução não encontrada.\n\n");
+				exit(1);
+			}
+			
 			break;
-		case 13: return 13;
-			break;		
+			
 		default: return 0;
 	}
 	
 	return 1;
 }
 
-int leituraMem(char word){
-	int i, valor, aux;
+int getEndreco(char most, char least){
+	int i, aux;
 	
-	i = conversaoHexa(word);
+	i = conversaoHexa(most);
+	aux = conversaoHexa(least);
+	
+	i = i << 4;
+	i = i | aux;
+	
+	return i;
+}
 
-	aux = conversaoHexa(ram[i].valor[0]);
-	valor = aux << 4;
-	//printf("%c %d -- %d %d\n", ram[i].valor[1], i, aux, valor);
-	//printf("\t-- %c -> %d\n", word, aux);
-	aux = conversaoHexa(ram[i].valor[1]);
+int leituraMem(int endereco){
+	int i, valor, aux;
+
+	valor = conversaoHexa(ram[endereco].valor[0]);
+	valor = valor << 4;
+	
+	aux = conversaoHexa(ram[endereco].valor[1]);
+	
 	valor = valor | aux;
 	
 	return valor;
+}
+
+void conversaoHToChar (int x, int pos){
+	int aux;
+	char c;
+	
+	aux = x & 15; // X AND 0F;
+	x = x >> 4;
+	c = conversaoChar(x);
+	
+	if (c == '\0'){
+		printf("ERRO!\n");
+		exit(1);
+	}
+	
+	ram[pos].valor[0] = conversaoChar(x);
+	
+	c = conversaoChar(aux);
+	
+	if (c == '\0'){
+		printf("ERRO!\n");
+		exit(1);
+	}
+	
+	ram[pos].valor[1] = conversaoChar(aux);
+}
+
+char conversaoChar(int x){
+	char aux;
+	
+	aux = '\0';
+	
+	if ((x >= 0) && (x < 10)){
+		aux = x + '0';
+	} else {
+		if ((x >= 10) && (x < 16)){
+			aux = x + 'A' - 10;
+		}
+	}
+	
+	return aux;
 }

@@ -1,0 +1,71 @@
+// ------------------------------------------------------------
+//  Trabalho Projetos em Computação I - Máquina Virtual
+//
+// Alunos: Guilherme Cousin, Marlon Dias
+// GitHub: https://github.com/marlonsd/PCI-VirtualMachine
+// README
+// ------------------------------------------------------------
+
+   O trabalho consiste na de uma máquina virtual de uma arquitura hipotética.
+Este é um trabalho desenvolvido para a disciplina de Projetos em Computação do
+curso de Ciência da Computação da Universidade Federal de Pelotas.
+
+	Para compilar, usar no terminal:$ make
+	Para limpar, usar no terminal:	$ make clean
+	clean - remove os arquivos .o e o executável do programa
+	
+	O código deve ser todo carregado para a máquina e, além disso, para
+indicar o fim da inserção do código, deve ser adicionar '@' ao fim.
+Exemplo:
+	14A3
+	20C7
+	B400
+	C000
+	@
+	
+	As instruções são formadas por dois bytes, ou 4 dígitos no código.
+	
+	É por conta total do programador fazer os saltos corretos. A máquina
+lê um bytes (dois dígitos) por vez.
+	
+	Caso a instrução esteja no formato adequado a instrução não será executada.
+No exemplo do halt, se estiverem faltando '000' não será executado. Exemplo:
+C000 - executa normalmente; C100 - Erro; C - Erro. O mesmo é válido para instruções
+com 0.
+	
+Instruções da Máquina:
+-- 1RXY
+	R <- CONTEÚDO de XY
+	
+-- 2RXY
+	R <- ENDEREÇO de XY
+	
+-- 3RXY
+	XY <- R (Conteúdo)
+
+-- 40RS
+	S <- R
+
+-- 5RST
+	R <- S + T (C/ complemento de 2)
+	
+-- 6RST
+	R <- S + T (Ponto flutuante) /* Não implementada (nem checado o formato) */
+	
+-- 7RST
+	R <- S OR T
+	
+-- 8RST
+	R <- S AND T
+	
+-- 9RST
+	R <- S XOR T
+
+-- AR0X
+	Rotaciona R para direita, X vezes.
+	
+-- BRXY
+	Se R == R(0) go to XY
+	
+-- C000
+	Halt
