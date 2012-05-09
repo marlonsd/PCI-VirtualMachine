@@ -29,7 +29,7 @@ void initReg(){
 	i = 0;
 	
 	while (i < NUMERO_REGISTRADORES){
-		variavel.valor[i] = '\0';
+		variavel.valor[i] = 0;
 		i++;
 	}
 }
@@ -89,7 +89,7 @@ int conversaoHexa(char c){
 
 int execucao(){
 	int i, operacao;
-	char aux;
+	char aux, c;
 	
 	i = 0;
 	aux = ram[i].valor[0];
@@ -108,6 +108,7 @@ int execucao(){
 		if (i < SIZE_MEM){
 			aux = ram[i].valor[0];
 		}
+		scanf("%c", &c);
 		printf("\n");
 	}
 	
@@ -115,7 +116,8 @@ int execucao(){
 }
 
 int acao(char opcode, int *position){
-	int aux, c, i, indice, x, y, pos;
+	int i, indice,pos;
+	char x, y, c, aux;
 
 	pos = *position;
 	
@@ -123,7 +125,7 @@ int acao(char opcode, int *position){
 		case 1: indice = conversaoHexa(ram[pos-1].valor[1]);
 			x = leituraMem(getEndreco(ram[pos].valor[0], ram[pos].valor[1]));
 			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
-			printf("Registrador [%X] <= 0x[%c%c]\n", indice, ram[pos].valor[0], ram[pos].valor[1]);
+			printf("Registrador [%X] <= 0x[%c%c]\n", indice, ram[pos].valor[0], ram[pos].valor[1]);		
 			variavel.valor[indice] = x;
 			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
@@ -131,7 +133,7 @@ int acao(char opcode, int *position){
 		case 2: indice = conversaoHexa(ram[pos-1].valor[1]);
 			x = getEndreco(ram[pos].valor[0], ram[pos].valor[1]);
 			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
-			printf("Registrador [%X] <= 0x%c%c\n", indice, ram[pos].valor[0], ram[pos].valor[1]);
+			printf("Registrador [%X] <= 0x%c%c\n", indice, ram[pos].valor[0], ram[pos].valor[1]);		
 			variavel.valor[indice] = x;
 			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			break;
@@ -162,7 +164,8 @@ int acao(char opcode, int *position){
 		case 5: indice = conversaoHexa(ram[pos].valor[0]);
 			x = variavel.valor[indice];
 			indice = conversaoHexa(ram[pos].valor[1]);
-			x = x + variavel.valor[indice];
+			y = variavel.valor[indice];		
+			x = x + y;
 			indice = conversaoHexa(ram[pos-1].valor[1]);
 			printf("Registrador [%X] = 0x%X\n", indice, variavel.valor[indice]);
 			printf("Registrador [%X] <= R[%X] + R[%X]\n", indice, conversaoHexa(ram[pos].valor[0]), conversaoHexa(ram[pos].valor[1]));
@@ -235,11 +238,11 @@ int acao(char opcode, int *position){
 			
 		case 11: indice = conversaoHexa(ram[pos-1].valor[1]);
 			if (variavel.valor[indice] == variavel.valor[0]){
-				printf("Registrador [%d] == Registrador [0], go to 0x%c%c", indice, ram[pos].valor[0], ram[pos].valor[1]);
+				printf("Registrador [%X] == Registrador [0], go to 0x%c%c", indice, ram[pos].valor[0], ram[pos].valor[1]);
 				x = getEndreco(ram[pos].valor[0], ram[pos].valor[1]);
 				*position = x - 1;
 			} else {
-				printf("Registrador [%d] =/= Registrador [0], go to 0x%X", indice, pos + 1);
+				printf("Registrador [%X] =/= Registrador [0], go to 0x%X", indice, pos+1);
 			}
 			break;
 			
@@ -259,8 +262,8 @@ int acao(char opcode, int *position){
 	return 1;
 }
 
-int getEndreco(char most, char least){
-	int i, aux;
+char getEndreco(char most, char least){
+	char i, aux;
 	
 	i = conversaoHexa(most);
 	aux = conversaoHexa(least);
@@ -271,8 +274,8 @@ int getEndreco(char most, char least){
 	return i;
 }
 
-int leituraMem(int endereco){
-	int i, valor, aux;
+char leituraMem(int endereco){
+	char i, valor, aux;
 
 	valor = conversaoHexa(ram[endereco].valor[0]);
 	valor = valor << 4;
@@ -323,4 +326,16 @@ char conversaoChar(int x){
 	}
 	
 	return aux;
+}
+
+void printRegistradores(){
+	int i;
+	
+	i = 0;
+	printf("\n-- Registradores:\n");
+	while (i < NUMERO_REGISTRADORES) {
+		printf("\tRegistrador[%X] = 0x%X\n", i, variavel.valor[i]);
+		i++;
+	}
+	printf("\n");
 }

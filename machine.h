@@ -32,10 +32,11 @@ int conversao(char word);
 int conversaoHexa(char c);
 int execucao();
 int acao(char opcode, int *pos);
-int leituraMem(int endereco);
-int getEndreco(char most, char least);
+char leituraMem(int endereco);
+char getEndreco(char most, char least);
 void conversaoHToChar (int x, int pos);
 char conversaoChar(int x);
+void printRegistradores();
 
 memoria ram[SIZE_MEM];
 registrador variavel;

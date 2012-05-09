@@ -33,7 +33,50 @@ No exemplo do halt, se estiverem faltando '000' não será executado. Exemplo:
 C000 - executa normalmente; C100 - Erro; C - Erro. O mesmo é válido para instruções
 com 0.
 	
-Instruções da Máquina:
+	A cada passo da execução é impresso na tela o valor anterior do registrador ou
+memória que será alterado, o que será feito, e o resultado após a execução do comando.
+Além disso, no final, é impresso TODOS os registradores.
+	
+	Nos mostradores temporários de registradores, os valores estão sendo impressos em
+hexadecial. (Um caso tipo, o valor -1 é representado por 0xFFFFFFFF, porém, os registradores
+são de 1 byte).
+								Fibonacci
+
+	Linha 06 contém o elemento da sequência desejado (26XX).
+
+Asembly:
+	00	2001
+	02	2100
+	04	2201
+	06	2407
+	08	2FFF
+	0A	B416
+	0C	5312
+	0E	4021
+	10	4032
+	12	544F
+	14	B00A
+	16	C000
+	@
+	
+Pseudo-Código:
+		r0 = 0;
+		r1 = 0;
+		r2 = 1;
+		r3 = -1;
+		r4 = n;
+inicio:	if (r0 == r4){
+			go to fim
+		} else {
+			r3 = r1 + r2;
+			r1 = r2;
+			r2 = r3;
+			r4--;
+			if (r0 == r0) 
+				go to inicio
+		}
+
+					Instruções da Máquina:
 -- 1RXY
 	R <- CONTEÚDO de XY
 	

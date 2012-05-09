@@ -38,6 +38,8 @@ int main(){
 	
 	i = execucao();
 	
+	printRegistradores();
+	
 	if (i){
 		printf("Execução finalizada com sucesso.\n");
 	} else {
